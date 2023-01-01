@@ -1,15 +1,10 @@
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from api.router import router
 
-#from api.router import router
-
-# create the API
 app = FastAPI()
 
-
-#app.include_router(router)
-
-
+app.include_router(router)
 
 origins = [
     "*",
@@ -22,7 +17,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-@app.get("/")
-def get_p():
-    return "c"
