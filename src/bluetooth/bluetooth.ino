@@ -34,21 +34,11 @@ void setup() {
  * Setup function executed on the startup
  */
 void loop() { 
-  String data = "Test\n";
-
-  bluetooth.write("A");
   if (bluetooth.available()) {
-    Serial.println(bluetooth.readStringUntil('\n'));
+    Serial.write(bluetooth.read());
   }
-  delay(500);
-}
-
-void send(String data) {
-  const int length = data.length();
-  int i = 0;
-
-  while (i < length) {
-    bluetooth.write(data[i]);
-    i++;
+  if (Serial.available()) {
+    bluetooth.write(Serial.read());
+    
   }
 }
