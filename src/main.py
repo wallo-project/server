@@ -1,10 +1,26 @@
 from threading import Thread
-from api.app import app
-import uvicorn
+from manager.api_manager import ApiManager
+
+
+from manager.serial_manager import SerialManager
+from manager.service_manager import ServiceManager
+
 
 
 def main() -> None:
-    api_thread: Thread = Thread(target=uvicorn.run(app, port=8080))
+    
+    # setup the serial communication with the Arduino
+    serial_manager: SerialManager = SerialManager()
+    serial_manager.connect()
+
+    # setup the services for both api and server
+    service_manager: ServiceManager = ServiceManager(serial_manager)
+
+    # setup the API
+    api: ApiManager = ApiManager(service_manager)
+    api_thread: Thread = Thread(target=api.run)
+
+
     #network_server_thread: Thread = Thread()
 
     api_thread.run()

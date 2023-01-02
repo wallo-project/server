@@ -30,12 +30,3 @@ class SerialManager:
             decoded_data = decoded_data[:-2]
         
         return decoded_data
-
-com = SerialManager()
-
-
-com.connect()
-
-while True:
-    com.write(input(">> "))
-    print(com.read())
