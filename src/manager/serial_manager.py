@@ -12,6 +12,7 @@ class SerialManager:
 
         # Iterate over the available ports
         for port, desc, hwid in ports:
+            print(desc)
             # Check if the port is an Arduino
             if 'Arduino' in desc or 'USB Serial Port' in desc:
                 self.__serial = serial.Serial(port, baud)

@@ -74,7 +74,7 @@ class ApiManager(FastAPI):
         self.add_websocket_route('/data/angles', self.__get_angles)
 
         # setting routes to send data to the robot
-        self.add_api_websocket_route('/command/{command}', self.__post_command)
+        self.add_api_route('/command/{command}', self.__post_command, methods=["GET", "POST"])
         self.add_api_route("/command/stop", self.__post_stop, methods=["GET", "POST"])
 
     def __get_welcome(self) -> str:
@@ -118,8 +118,12 @@ class ApiManager(FastAPI):
         return None
 
     # routes to post commands
-    def __post_command(self, command: str) -> dict:
-        return {}
+    def __post_command(self, command: str) -> str:
+        if (command.upper() == "START"):
+            self.__manager.send_start()
+        else:
+            self.__manager.send_stop()
+        return "OK"
 
     def __post_stop(self) -> str:
         return "OK"

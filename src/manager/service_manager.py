@@ -8,3 +8,9 @@ class ServiceManager:
 
     def is_connected(self) -> bool:
         return False
+
+    def send_start(self) -> None:
+        self.__serial.write("start")
+    
+    def send_stop(self) -> None:
+        self.__serial.write("stop")
