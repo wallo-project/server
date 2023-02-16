@@ -11,7 +11,7 @@ def main() -> None:
     
     # setup the serial communication with the Arduino
     serial_manager: SerialManager = SerialManager()
-    serial_manager.connect()
+    serial_manager.init_com()
 
     # setup the services for both api and server
     service_manager: ServiceManager = ServiceManager(serial_manager)

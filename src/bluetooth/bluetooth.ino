@@ -8,6 +8,7 @@
 
 // include the necessary libraries
 #include <SoftwareSerial.h>
+#include <string.h>
 
 // setup the pins
 #define BLE_RXD 10
@@ -15,7 +16,7 @@
 
 // setup the bluetooth communication
 SoftwareSerial bluetooth(BLE_RXD, BLE_TXD);
-
+char buffer[512];
 /**
  * Setup function executed on the startup
  */
@@ -34,8 +35,10 @@ void setup() {
  * Setup function executed on the startup
  */
 void loop() { 
+  
   if (bluetooth.available()) {
     Serial.write(bluetooth.read());
+    bluetooth.readString();
   }
   if (Serial.available()) {
     bluetooth.write(Serial.read());

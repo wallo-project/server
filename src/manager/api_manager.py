@@ -67,14 +67,14 @@ class ApiManager(FastAPI):
         self.add_api_route('/healthcheck', self.__get_healthcheck)
 
         # setting routes to get data from the robot
-        self.add_websocket_route('/status', self.__get_status)
-        self.add_websocket_route('/data/download', self.__get_data_file)
-        self.add_websocket_route('/data/latest', self.__get_latest_data)
-        self.add_websocket_route('/data/speeds', self.__get_speeds)
-        self.add_websocket_route('/data/angles', self.__get_angles)
+        self.add_api_route('/status', self.__get_status)
+        self.add_api_route('/data/download', self.__get_data_file)
+        self.add_api_route('/data/latest', self.__get_latest_data)
+        self.add_api_route('/data/speeds', self.__get_speeds)
+        self.add_api_route('/data/angles', self.__get_angles)
 
         # setting routes to send data to the robot
-        self.add_api_route('/command/{command}', self.__post_command, methods=["GET", "POST"])
+        self.add_api_route('/command/start', self.__post_start, methods=["GET", "POST"])
         self.add_api_route("/command/stop", self.__post_stop, methods=["GET", "POST"])
 
     def __get_welcome(self) -> str:
@@ -118,15 +118,11 @@ class ApiManager(FastAPI):
         return None
 
     # routes to post commands
-    def __post_command(self, command: str) -> str:
-        if (command.upper() == "START"):
-            self.__manager.send_start()
-        else:
-            self.__manager.send_stop()
-        return "OK"
+    def __post_start(self) -> str:
+        return self.__manager.send_start()
 
     def __post_stop(self) -> str:
-        return "OK"
+        return self.__manager.send_stop()
 
 
     def run(self) -> None:
