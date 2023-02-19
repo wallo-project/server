@@ -1,13 +1,15 @@
+from manager.bridge_manager import BridgeManager
 import serial
 import serial.tools.list_ports
 import os
-import time
 
 
 class SerialManager:
-    def __init__(self, port: str | None = None) -> None:
+    def __init__(self, bridge_manager: BridgeManager, port: str | None = None) -> None:
         self.__s: serial.Serial = None
         self.__port: str = port
+        self.__connected: bool = True
+        self.__bridge: BridgeManager = bridge_manager
 
     def set_port(self, port: str) -> None:
         self.__port = port
@@ -20,12 +22,17 @@ class SerialManager:
             self.set_port(port)
         
         elif (self.__port is None):
-            self.auto_detect_port()
+            self.__auto_detect_port()
         
         if (self.__port is not None):
-            self.__s = serial.Serial(self.__port)
+            try:
+                self.__s = serial.Serial(self.__port)
+                self.__bridge.set_connection(True)
+            except:
+                pass
 
-    def auto_detect_port(self) -> bool:
+
+    def __auto_detect_port(self) -> bool:
         ports: list = list(serial.tools.list_ports.comports())
 
         match os.name:
@@ -39,16 +46,33 @@ class SerialManager:
                     if 'COM' in port.description:
                         self.__port = port.name 
     
-    def send(self, data: str) -> None:
+    def __send(self, data: str) -> None:
+        try:
+            self.__s.write(data.encode("utf-8"))
+        except:
+            pass
+            # faire log
+
+    def __read(self) -> str:
+        try:
+            return self.__s.read_until().decode()
+        except:
+            pass
+
+    def run(self):
+
+        self.__send("TEST_CONNECTION")
+        data: str = self.__read()
         print(data)
-        self.__s.write(data.encode("utf-8"))
+        while(self.__connected):
 
-    def read(self) -> str:
-        return self.__s.read_until().decode()[:-2]
+            if (self.__bridge.get_command()):
+                self.__send(self.__bridge.get_command())
+            else:
+                self.__send('')
 
-    def test(self):
-        while(True):
-            self.send("ON")
-            print(self.read())
-            self.send("OFF")
-            print(self.read())
+            data: str = self.__read()
+            print(data)
+            self.__bridge.store_command(data)
+
+    

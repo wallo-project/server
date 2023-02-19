@@ -1,47 +1,69 @@
 /**
  * Code that test the bluetooth communications.
- * 
+ *
  * @author WALL-O Dev Team.
  * @version 1.0.0
  * @since December 26th 2022
  */
-
-// include the necessary libraries
-#include <SoftwareSerial.h>
 #include <string.h>
+#include <SoftwareSerial.h>
 
-// setup the pins
-#define BLE_RXD 10
-#define BLE_TXD 11
+#define LED_PIN 13
+#define BL_RXD 2
+#define BL_TXD 3
 
-// setup the bluetooth communication
-SoftwareSerial bluetooth(BLE_RXD, BLE_TXD);
-char buffer[512];
-/**
- * Setup function executed on the startup
- */
+bool running = false;
+
+SoftwareSerial BluetoothSerial(BL_RXD, BL_TXD);
+
 void setup() {
-  // init the szerial
+  digitalWrite(LED_PIN, LOW);
+
   Serial.begin(9600);
+  while (!Serial.available()) {;}
 
-  // wait for the serial to be started
-  while (!Serial) {;}
-
-  // init the bluetooth
-  bluetooth.begin(9600);
+  BluetoothSerial.begin(9600);
+  while (!BluetoothSerial.available()) {;}
 }
 
-/**
- * Setup function executed on the startup
- */
-void loop() { 
+void loop()
+{
+  communicate();
+  Serial.println("couccou");
+  if (running) {
+    digitalWrite(LED_PIN, HIGH);
+  }
+  else {
+    digitalWrite(LED_PIN, LOW);
+  }
+}
+
+void communicate() {
+  String data = "";
+  String commandResponse = "";
   
-  if (bluetooth.available()) {
-    Serial.write(bluetooth.read());
-    bluetooth.readString();
+  if (BluetoothSerial.available()) {
+    data = BluetoothSerial.readString();
+    Serial.println(data);
   }
-  if (Serial.available()) {
-    bluetooth.write(Serial.read());
-    
+
+  if (data.equals("START")) {
+    running = true;
+    commandResponse = "OK";
   }
+  else if (data.equals("STOP")) {
+    running = false;
+    commandResponse = "OK";
+  }
+  else if (data.equals("OK")) {
+    commandResponse = "";
+  }
+  else {
+    commandResponse = "UNKOWN COMMAND";
+  }
+
+  data = "{here are some data,commandResponse:" + commandResponse + "}";
+  
+  Serial.println(data);
+  BluetoothSerial.print(data);
 }
