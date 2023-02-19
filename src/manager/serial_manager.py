@@ -2,6 +2,7 @@ from manager.bridge_manager import BridgeManager
 import serial
 import serial.tools.list_ports
 import os
+import json
 
 
 class SerialManager:
@@ -55,7 +56,7 @@ class SerialManager:
 
     def __read(self) -> str:
         try:
-            return self.__s.read_until().decode()
+            return self.__s.read_until().decode()[:-1]
         except:
             pass
 
@@ -63,16 +64,15 @@ class SerialManager:
 
         self.__send("TEST_CONNECTION")
         data: str = self.__read()
-        print(data)
+        
         while(self.__connected):
 
             if (self.__bridge.get_command()):
                 self.__send(self.__bridge.get_command())
             else:
-                self.__send('')
+                self.__send("OK")
 
             data: str = self.__read()
             print(data)
+            
             self.__bridge.store_command(data)
-
-    

@@ -22,7 +22,6 @@ def main() -> None:
 
     serial_thread: Thread = Thread(target=serial_manager.run)
     serial_thread.start()
-    print("hey")
     api_thread.run()
     
 

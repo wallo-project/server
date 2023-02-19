@@ -31,7 +31,7 @@ class ApiManager(FastAPI):
     @since 02 January 2023
     """
     
-    def __init__(self, bridge_manager: BridgeManager, host: str | None = None, port: int = 8080, allow_origins: list[str] = ['*'], allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
+    def __init__(self, host: str | None = None, port: int = 8080, allow_origins: list[str] = ['*'], allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
         """! Constructor of the class.
         This class contains the API to run.
 
@@ -46,6 +46,8 @@ class ApiManager(FastAPI):
         # init the super method
         super().__init__()
 
+        global bridge_manager
+
         # add the middleware configuration
         self.add_middleware(
             CORSMiddleware,
@@ -59,11 +61,11 @@ class ApiManager(FastAPI):
         self.__host: str | None = host
         self.__port: int = port
 
-        # setting the manager to communicate with Arduino
-        self.__bridge: BridgeManager = bridge_manager
-
         # setting routes related to the API status
         self.add_api_route('/', self.__get_welcome)
+
+
+        self.add_api_route('/healthcheck', self.__get_status)
 
         # setting routes to get data from the robot
         self.add_api_route('/status', self.__get_status)
@@ -88,17 +90,17 @@ class ApiManager(FastAPI):
         """
         return {
             "status": "OK",
-            "wall-o connected": self.__bridge.is_connected(),
+            "wall-o connected": bridge_manager.is_connected(),
             "services": "successfully loaded"
-            }
+        }
 
     # routes to post commands
     def __post_start(self) -> str:
-        self.__bridge.store_command("START")
+        bridge_manager.store_command("START")
         return {"response": "OK"}
 
     def __post_stop(self) -> str:
-        self.__bridge.store_command("STOP")
+        bridge_manager.store_command("STOP")
         return {"response": "OK"}
 
 

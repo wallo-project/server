@@ -9,27 +9,26 @@
 #include <SoftwareSerial.h>
 
 #define LED_PIN 13
-#define BL_RXD 2
-#define BL_TXD 3
+#define BL_RXD 10
+#define BL_TXD 11
 
 bool running = false;
 
 SoftwareSerial BluetoothSerial(BL_RXD, BL_TXD);
 
 void setup() {
+  pinMode(LED_PIN, OUTPUT);
+
   digitalWrite(LED_PIN, LOW);
 
   Serial.begin(9600);
-  while (!Serial.available()) {;}
 
   BluetoothSerial.begin(9600);
-  while (!BluetoothSerial.available()) {;}
 }
 
 void loop()
 {
-  communicate();
-  Serial.println("couccou");
+  communicate(5, 0);
   if (running) {
     digitalWrite(LED_PIN, HIGH);
   }
@@ -38,32 +37,38 @@ void loop()
   }
 }
 
-void communicate() {
+void communicate(int speed, int angle) {
   String data = "";
   String commandResponse = "";
   
   if (BluetoothSerial.available()) {
     data = BluetoothSerial.readString();
-    Serial.println(data);
   }
 
-  if (data.equals("START")) {
+  if (data.startsWith("START")) {
     running = true;
     commandResponse = "OK";
   }
-  else if (data.equals("STOP")) {
+  else if (data.startsWith("STOP")) {
     running = false;
     commandResponse = "OK";
   }
-  else if (data.equals("OK")) {
+  else if (data.startsWith("OK")) {
     commandResponse = "";
   }
-  else {
+  else if (data.startsWith("TEST_CONNECTION")) {
+    commandResponse = "CONNECTION_ESTABLISHED";
+  }
+  else if (!data.equals("")) {
     commandResponse = "UNKOWN COMMAND";
   }
 
-  data = "{here are some data,commandResponse:" + commandResponse + "}";
-  
-  Serial.println(data);
-  BluetoothSerial.print(data);
+  if (!data.equals("")) {
+    data = "\"running\":" + String(running) + ",\"speed\":" + String(speed); 
+    if (!commandResponse.equals("")) {
+      data += ",\"commandResponse\":" + commandResponse;
+    }
+    data = "{" + data + "}";
+    BluetoothSerial.println(data);
+  }
 }
