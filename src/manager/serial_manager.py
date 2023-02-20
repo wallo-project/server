@@ -6,11 +6,11 @@ import json
 
 
 class SerialManager:
-    def __init__(self, bridge_manager: BridgeManager, port: str | None = None) -> None:
+    def __init__(self, shared_bridge, port: str | None = None) -> None:
         self.__s: serial.Serial = None
         self.__port: str = port
         self.__connected: bool = True
-        self.__bridge: BridgeManager = bridge_manager
+        self.__shared_bridge = shared_bridge
 
     def set_port(self, port: str) -> None:
         self.__port = port
@@ -28,7 +28,7 @@ class SerialManager:
         if (self.__port is not None):
             try:
                 self.__s = serial.Serial(self.__port)
-                self.__bridge.set_connection(True)
+                self.__shared_bridge.value.set_connection(True)
             except:
                 pass
 
@@ -62,17 +62,20 @@ class SerialManager:
 
     def run(self):
 
+        if (not self.__s):
+            self.init_com()
+        
         self.__send("TEST_CONNECTION")
         data: str = self.__read()
         
         while(self.__connected):
 
-            if (self.__bridge.get_command()):
-                self.__send(self.__bridge.get_command())
+            if (self.__shared_bridge.value.get_command()):
+                self.__send(self.__shared_bridge.value.get_command())
             else:
                 self.__send("OK")
 
             data: str = self.__read()
             print(data)
             
-            self.__bridge.store_command(data)
+            self.__shared_bridge.value.store_command(data)
