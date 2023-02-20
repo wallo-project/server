@@ -7,17 +7,18 @@ All the informations are coming from the ServiceManager class.
 """
 
 # importing elements from modules
+import json
+import threading
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import multiprocessing
-
 # importing modules
 import uvicorn
-
 # importing config
 from config import config
 
-class ApiManager(FastAPI):
+from manager.serial_manager import SerialManager
+
+class ServerManager(FastAPI):
     """! Class that contains the API.
     It inherits from FastAPI class.
 
@@ -28,7 +29,7 @@ class ApiManager(FastAPI):
     @since 02 January 2023
     """
     
-    def __init__(self, shared_command_queue, shared_data_queue, host: str | None = None, port: int = 8080, allow_origins: list[str] = ['*'], allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
+    def __init__(self, serial_manager: SerialManager, host: str | None = None, port: int = 8080, allow_origins: list[str] = ['*'], allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
         """! Constructor of the class.
         This class contains the API to run.
 
@@ -56,24 +57,23 @@ class ApiManager(FastAPI):
         self.__host: str | None = host
         self.__port: int = port
 
-        self.__shared_command_queue: multiprocessing.Queue = shared_command_queue
-
-        self.__shared_data_queue: multiprocessing.Queue = shared_data_queue
+        self.__serial_manager: SerialManager = serial_manager
+        self.__command: str = ""
+        self.__data: dict = {}
 
         # setting routes related to the API status
         self.add_api_route('/', self.__get_welcome)
 
-
         self.add_api_route('/healthcheck', self.__get_status)
-
         # setting routes to get data from the robot
         self.add_api_route('/status', self.__get_status)
-
         # setting routes to send data to the robot
         self.add_api_route('/command/start', self.__post_start, methods=["POST", "GET"])
         self.add_api_route("/command/stop", self.__post_stop, methods=["POST", "GET"])
 
-    def __get_welcome(self) -> str:
+        self.add_api_route('/latest-data', self.__latest_data, methods=["GET"])
+
+    async def __get_welcome(self) -> str:
         """! Method that return a welcome message.
         The only purpose is to test the API.
         
@@ -81,7 +81,7 @@ class ApiManager(FastAPI):
         """
         return f"Welcome to the {config.API_NAME} v{config.API_VERSION}"
 
-    def __get_status(self) -> dict:
+    async def __get_status(self) -> dict:
         """! Method that return a report on the health of the API.
         The health report the status of the API and the services loading for communications with Arduino.
         
@@ -89,26 +89,45 @@ class ApiManager(FastAPI):
         """
         return {
             "status": "OK",
-            "wall-o connected": "UNKNOWN_STATUS",
+            "wall-o connected": self.__serial_manager.is_connected(),
             "services": "SUCCESSFULLY_LOADED"
         }
     
-    def __get_data(self) -> dict:
-        return self.__shared_data_queue.get()
+    async def __latest_data(self) -> dict:
+        return self.__data
 
     # routes to post commands
-    def __post_start(self) -> dict:
-        self.__shared_command_queue.empty()
-        self.__shared_command_queue.put("START")
+    async def __post_start(self) -> dict:
+        self.__command = "START"
         return {"response": "OK"}
 
-    def __post_stop(self) -> dict:
-        self.__shared_command_queue.empty()
-        self.__shared_command_queue.put("STOP")
+    async def __post_stop(self) -> dict:
+        self.__command = "STOP"
         return {"response": "OK"}
+    
+
+    def serial_server(self) -> None:
+
+        if (not self.__serial_manager.is_ready()):
+            self.__serial_manager.init_connection()
+            print("init")
+        
+        self.__serial_manager.send("TEST_CONNECTION")
+        self.__data: str = self.__serial_manager.read()
+        
+        while (True):
+
+            if (self.__command != ""):
+                self.__serial_manager.send(self.__command)
+                self.__command == ""
+            else:
+                self.__serial_manager.send("OK")
+
+            self.__data: str = json.loads(self.__serial_manager.read())
 
 
     def run(self) -> None:
+        threading.Thread(target=self.serial_server).start()
         if (self.__host):
             uvicorn.run(self, host=self.__host, port=self.__port)
         else:

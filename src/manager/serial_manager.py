@@ -1,25 +1,30 @@
-import multiprocessing
 import serial
 import serial.tools.list_ports
 import os
-import json
 
 
 class SerialManager:
-    def __init__(self, shared_command_queue: multiprocessing.Queue, shared_data_queue: multiprocessing.Queue, port: str | None = None) -> None:
+    def __init__(self, port: str | None = None) -> None:
         self.__s: serial.Serial = None
         self.__port: str = port
-        self.__connected: bool = True
-        self.__shared_command_queue: multiprocessing.Queue = shared_command_queue
-        self.__shared_data_queue: multiprocessing.Queue = shared_data_queue
+        self.__is_connected: bool = True
 
     def set_port(self, port: str) -> None:
         self.__port = port
 
     def get_port(self) -> str | None:
         return self.__port
+    
+    def set_connected(self, is_connected: bool) -> None:
+        self.__is_connected = is_connected
 
-    def init_com(self, port: str | None = None) -> None:
+    def is_connected(self) -> bool:
+        return self.__is_connected
+    
+    def is_ready(self) -> bool:
+        return self.__s != None
+
+    def init_connection(self, port: str | None = None) -> None:
         if (port is not None):
             self.set_port(port)
         
@@ -29,9 +34,9 @@ class SerialManager:
         if (self.__port is not None):
             try:
                 self.__s = serial.Serial(self.__port)
+                self.set_connected(True)
             except:
                 pass
-
 
     def __auto_detect_port(self) -> bool:
         ports: list = list(serial.tools.list_ports.comports())
@@ -47,35 +52,15 @@ class SerialManager:
                     if 'COM' in port.description:
                         self.__port = port.name 
     
-    def __send(self, data: str) -> None:
+    def send(self, data: str) -> None:
         try:
             self.__s.write(data.encode("utf-8"))
         except:
             pass
             # faire log
 
-    def __read(self) -> str:
+    def read(self) -> str:
         try:
             return self.__s.read_until().decode()[:-1]
         except:
             pass
-
-    def run(self):
-
-        if (not self.__s):
-            self.init_com()
-        
-        self.__send("TEST_CONNECTION")
-        data: str = self.__read()
-        
-        while(self.__connected):
-
-            try:
-                command: str = self.__shared_command_queue.get_nowait()
-                self.__send(command)
-            except:
-                self.__send("OK")
-
-            data: str = self.__read()
-            
-            self.__shared_data_queue.put(data)

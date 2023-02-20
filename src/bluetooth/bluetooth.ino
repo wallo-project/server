@@ -66,7 +66,7 @@ void communicate(int speed, int angle) {
   if (!data.equals("")) {
     data = "\"running\":" + String(running) + ",\"speed\":" + String(speed); 
     if (!commandResponse.equals("")) {
-      data += ",\"commandResponse\":" + commandResponse;
+      data += ",\"commandResponse\":\"" + commandResponse + "\"";
     }
     data = "{" + data + "}";
     BluetoothSerial.println(data);
