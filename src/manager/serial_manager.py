@@ -1,4 +1,4 @@
-from manager.bridge_manager import BridgeManager
+import multiprocessing
 import serial
 import serial.tools.list_ports
 import os
@@ -6,11 +6,12 @@ import json
 
 
 class SerialManager:
-    def __init__(self, shared_bridge, port: str | None = None) -> None:
+    def __init__(self, shared_command_queue: multiprocessing.Queue, shared_data_queue: multiprocessing.Queue, port: str | None = None) -> None:
         self.__s: serial.Serial = None
         self.__port: str = port
         self.__connected: bool = True
-        self.__shared_bridge = shared_bridge
+        self.__shared_command_queue: multiprocessing.Queue = shared_command_queue
+        self.__shared_data_queue: multiprocessing.Queue = shared_data_queue
 
     def set_port(self, port: str) -> None:
         self.__port = port
@@ -28,7 +29,6 @@ class SerialManager:
         if (self.__port is not None):
             try:
                 self.__s = serial.Serial(self.__port)
-                self.__shared_bridge.value.set_connection(True)
             except:
                 pass
 
@@ -70,12 +70,12 @@ class SerialManager:
         
         while(self.__connected):
 
-            if (self.__shared_bridge.value.get_command()):
-                self.__send(self.__shared_bridge.value.get_command())
-            else:
+            try:
+                command: str = self.__shared_command_queue.get_nowait()
+                self.__send(command)
+            except:
                 self.__send("OK")
 
             data: str = self.__read()
-            print(data)
             
-            self.__shared_bridge.value.store_command(data)
+            self.__shared_data_queue.put(data)

@@ -7,15 +7,12 @@ All the informations are coming from the ServiceManager class.
 """
 
 # importing elements from modules
-import datetime
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import multiprocessing
 
 # importing modules
 import uvicorn
-
-# importing the service management
-from manager.bridge_manager import BridgeManager
 
 # importing config
 from config import config
@@ -31,7 +28,7 @@ class ApiManager(FastAPI):
     @since 02 January 2023
     """
     
-    def __init__(self, shared_bridge, host: str | None = None, port: int = 8080, allow_origins: list[str] = ['*'], allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
+    def __init__(self, shared_command_queue, shared_data_queue, host: str | None = None, port: int = 8080, allow_origins: list[str] = ['*'], allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
         """! Constructor of the class.
         This class contains the API to run.
 
@@ -46,8 +43,6 @@ class ApiManager(FastAPI):
         # init the super method
         super().__init__()
 
-        self.__shared_bridge = shared_bridge
-
         # add the middleware configuration
         self.add_middleware(
             CORSMiddleware,
@@ -60,6 +55,10 @@ class ApiManager(FastAPI):
         # setting up the informations to run the API
         self.__host: str | None = host
         self.__port: int = port
+
+        self.__shared_command_queue: multiprocessing.Queue = shared_command_queue
+
+        self.__shared_data_queue: multiprocessing.Queue = shared_data_queue
 
         # setting routes related to the API status
         self.add_api_route('/', self.__get_welcome)
@@ -90,17 +89,22 @@ class ApiManager(FastAPI):
         """
         return {
             "status": "OK",
-            "wall-o connected": self.__shared_bridge.is_connected(),
-            "services": "successfully loaded"
+            "wall-o connected": "UNKNOWN_STATUS",
+            "services": "SUCCESSFULLY_LOADED"
         }
+    
+    def __get_data(self) -> dict:
+        return self.__shared_data_queue.get()
 
     # routes to post commands
-    def __post_start(self) -> str:
-        self.__shared_bridge.value.store_command("START")
+    def __post_start(self) -> dict:
+        self.__shared_command_queue.empty()
+        self.__shared_command_queue.put("START")
         return {"response": "OK"}
 
-    def __post_stop(self) -> str:
-        self.__shared_bridge.value.store_command("STOP")
+    def __post_stop(self) -> dict:
+        self.__shared_command_queue.empty()
+        self.__shared_command_queue.put("STOP")
         return {"response": "OK"}
 
 
