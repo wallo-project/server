@@ -47,11 +47,11 @@ void communicate(int speed, int angle) {
 
   if (data.startsWith("START")) {
     running = true;
-    commandResponse = "OK";
+    commandResponse = "START_OK";
   }
   else if (data.startsWith("STOP")) {
     running = false;
-    commandResponse = "OK";
+    commandResponse = "STOP_OK";
   }
   else if (data.startsWith("OK")) {
     commandResponse = "";
@@ -60,7 +60,7 @@ void communicate(int speed, int angle) {
     commandResponse = "CONNECTION_ESTABLISHED";
   }
   else if (!data.equals("")) {
-    commandResponse = "UNKOWN COMMAND";
+    commandResponse = "UNKOWN_COMMAND";
   }
 
   if (!data.equals("")) {
