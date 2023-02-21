@@ -10,7 +10,6 @@ class SerialManager:
     def __init__(self, bridge_manager: BridgeManager, data_manager: DataManager, port: str | None = None) -> None:
         self.__s: serial.Serial = None
         self.__port: str = port
-        self.__is_connected: bool = True
         self.__bridge: BridgeManager = bridge_manager
         self.__data_manager: DataManager = data_manager
 
@@ -19,12 +18,6 @@ class SerialManager:
 
     def get_port(self) -> str | None:
         return self.__port
-    
-    def set_connected(self, is_connected: bool) -> None:
-        self.__is_connected = is_connected
-
-    def is_connected(self) -> bool:
-        return self.__is_connected
     
     def is_ready(self) -> bool:
         return self.__s != None
@@ -39,7 +32,7 @@ class SerialManager:
         if (self.__port is not None):
             try:
                 self.__s = serial.Serial(self.__port)
-                self.set_connected(True)
+                self.__bridge.set_connected(True)
             except:
                 pass
 
@@ -59,7 +52,7 @@ class SerialManager:
     
     def __send(self, data: str) -> None:
         try:
-            self.__s.write(data.encode("utf-8"))
+            self.__s.write(data.encode())
         except:
             pass
             # faire log
