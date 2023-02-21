@@ -2,12 +2,17 @@ import serial
 import serial.tools.list_ports
 import os
 
+from manager.bridge_manager import BridgeManager
+from manager.data_manager import DataManager
+
 
 class SerialManager:
-    def __init__(self, port: str | None = None) -> None:
+    def __init__(self, bridge_manager: BridgeManager, data_manager: DataManager, port: str | None = None) -> None:
         self.__s: serial.Serial = None
         self.__port: str = port
         self.__is_connected: bool = True
+        self.__bridge: BridgeManager = bridge_manager
+        self.__data_manager: DataManager = data_manager
 
     def set_port(self, port: str) -> None:
         self.__port = port
@@ -52,15 +57,37 @@ class SerialManager:
                     if 'COM' in port.description:
                         self.__port = port.name 
     
-    def send(self, data: str) -> None:
+    def __send(self, data: str) -> None:
         try:
             self.__s.write(data.encode("utf-8"))
         except:
             pass
             # faire log
 
-    def read(self) -> str:
+    def __read(self) -> str:
         try:
             return self.__s.read_until().decode()[:-1]
         except:
             pass
+
+    def run(self) -> None:
+        if (not self.is_ready()):
+            self.init_connection()
+        
+        self.__send("TEST_CONNECTION")
+        data: dict = self.__data_manager.convert_data(self.__read())
+
+        self.__bridge.set_data(data)
+        
+        while (True):
+
+            if (self.__bridge.has_command()):
+                self.__send(self.__bridge.get_command())
+                self.__bridge.reset_command()
+            
+            else:
+                self.__send("OK")
+
+            data: dict = self.__data_manager.convert_data(self.__read())
+
+            self.__bridge.set_data(data)

@@ -7,8 +7,6 @@ All the informations are coming from the ServiceManager class.
 """
 
 # importing elements from modules
-import json
-import threading
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 # importing modules
@@ -16,9 +14,9 @@ import uvicorn
 # importing config
 from config import config
 
-from manager.serial_manager import SerialManager
+from manager.bridge_manager import BridgeManager
 
-class ServerManager(FastAPI):
+class ApiManager(FastAPI):
     """! Class that contains the API.
     It inherits from FastAPI class.
 
@@ -29,7 +27,7 @@ class ServerManager(FastAPI):
     @since 02 January 2023
     """
     
-    def __init__(self, serial_manager: SerialManager, host: str | None = None, port: int = 8080, allow_origins: list[str] = ['*'], allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
+    def __init__(self, bridge_manager: BridgeManager, host: str | None = None, port: int = 8080, allow_origins: list[str] = ['*'], allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
         """! Constructor of the class.
         This class contains the API to run.
 
@@ -57,9 +55,7 @@ class ServerManager(FastAPI):
         self.__host: str | None = host
         self.__port: int = port
 
-        self.__serial_manager: SerialManager = serial_manager
-        self.__command: str = ""
-        self.__data: dict = {}
+        self.__bridge_manager: BridgeManager = bridge_manager
 
         # setting routes related to the API status
         self.add_api_route('/', self.__get_welcome)
@@ -89,45 +85,24 @@ class ServerManager(FastAPI):
         """
         return {
             "status": "OK",
-            "wall-o connected": self.__serial_manager.is_connected(),
+            "wall-o connected": self.__bridge_manager.is_connected(),
             "services": "SUCCESSFULLY_LOADED"
         }
     
     async def __latest_data(self) -> dict:
-        return self.__data
+        return self.__bridge_manager.get_data()
 
     # routes to post commands
     async def __post_start(self) -> dict:
-        self.__command = "START"
+        self.__bridge_manager.set_command("START")
         return {"response": "OK"}
 
     async def __post_stop(self) -> dict:
-        self.__command = "STOP"
+        self.__bridge_manager.set_command("STOP")
         return {"response": "OK"}
     
 
-    def serial_server(self) -> None:
-
-        if (not self.__serial_manager.is_ready()):
-            self.__serial_manager.init_connection()
-            print("init")
-        
-        self.__serial_manager.send("TEST_CONNECTION")
-        self.__data: str = self.__serial_manager.read()
-        
-        while (True):
-
-            if (self.__command != ""):
-                self.__serial_manager.send(self.__command)
-                self.__command == ""
-            else:
-                self.__serial_manager.send("OK")
-
-            self.__data: str = json.loads(self.__serial_manager.read())
-
-
     def run(self) -> None:
-        threading.Thread(target=self.serial_server).start()
         if (self.__host):
             uvicorn.run(self, host=self.__host, port=self.__port)
         else:
