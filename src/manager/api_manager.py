@@ -69,6 +69,8 @@ class ApiManager(FastAPI):
 
         self.add_api_route('/latest-data', self.__latest_data, methods=["GET"])
 
+        self.add_api_route('/latest-data', self.__latest_data, methods=["GET"])
+
     async def __get_welcome(self) -> str:
         """! Method that return a welcome message.
         The only purpose is to test the API.
@@ -85,7 +87,7 @@ class ApiManager(FastAPI):
         """
         return {
             "status": "OK",
-            "wall-o connected": self.__bridge_manager.is_connected(),
+            "wallo_connection": self.__bridge_manager.is_connected(),
             "services": "SUCCESSFULLY_LOADED"
         }
     

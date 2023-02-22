@@ -13,7 +13,7 @@ class DataManager:
     
     def init_file(self):
         with open(self.__path, 'w') as f:
-            f.write("RUNNING,SPEED,ANGLE")
+            f.write("TIME,RUNNING,SPEED,ANGLE\n")
 
     def convert_data(self, data: str) -> dict:
         try:
@@ -23,4 +23,4 @@ class DataManager:
         
     def store_data(self, data: dict) -> None:
         with open(self.__path, 'a') as f:
-            f.write(str(data))
+            f.write(str(datetime.datetime.now())+','+str(data["running"])+','+str(data['speed'])+','+str(data['speed'])+'\n')
