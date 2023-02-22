@@ -46,9 +46,7 @@ class SerialManager:
                         self.__port = port.name
 
             case "posix":
-                for port in ports:
-                    if 'COM' in port.description:
-                        self.__port = port.name 
+                self.__port = "/dev/rfcomm0"
     
     def __send(self, data: str) -> None:
         try:
