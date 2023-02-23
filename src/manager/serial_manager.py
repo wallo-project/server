@@ -73,7 +73,7 @@ class SerialManager:
         else:
 
             try:
-                self.__s = serial.Serial(port=self.__port, timeout=3, write_timeout=3)
+                self.__s = serial.Serial(port=self.__port, timeout=5, write_timeout=10)
                 return True
             except:
                 return False
@@ -100,6 +100,5 @@ class SerialManager:
                 self.__send("OK")
 
             data: dict = self.__data_manager.convert_data(self.__read())
-
             self.__bridge.set_data(data)
-            #self.__data_manager.store_data(data)
+            self.__data_manager.store_data(data)
