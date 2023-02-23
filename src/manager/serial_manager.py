@@ -55,7 +55,7 @@ class SerialManager:
                 try:
                     self.__s = serial.Serial(port=port, timeout=3, write_timeout=3)
                     # send a test message
-                    self.__send("TEST_CONNECTION")
+                    self.__send('3')
                     # result of the read
                     res = self.__read()
                     
@@ -91,13 +91,10 @@ class SerialManager:
             self.init_connection()
         
         while (True):
-
+            
             if (self.__bridge.has_command()):
                 self.__send(self.__bridge.get_command())
                 self.__bridge.reset_command()
-            
-            else:
-                self.__send("OK")
 
             data: dict = self.__data_manager.convert_data(self.__read())
             self.__bridge.set_data(data)

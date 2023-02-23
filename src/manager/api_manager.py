@@ -96,11 +96,11 @@ class ApiManager(FastAPI):
 
     # routes to post commands
     async def __post_start(self) -> dict:
-        self.__bridge_manager.set_command("START")
+        self.__bridge_manager.set_command("1")
         return {"response": "OK"}
 
     async def __post_stop(self) -> dict:
-        self.__bridge_manager.set_command("STOP")
+        self.__bridge_manager.set_command("2")
         return {"response": "OK"}
     
 
