@@ -6,6 +6,7 @@
  * @since December 26th 2022
  */
 #include <SoftwareSerial.h>
+#include <time.h>
 
 #define LED_PIN 13
 #define BL_RXD 10
@@ -27,6 +28,7 @@ void setup() {
   Serial.begin(9600);
 
   BluetoothSerial.begin(9600);
+  randomSeed(analogRead(0));
 }
 void loop() {
   communicate();
@@ -35,7 +37,8 @@ void loop() {
   } else {
     digitalWrite(LED_PIN, LOW);
   }
-  delay(100);
+  generateRandomValues();
+  delay(500);
 }
 
 void communicate() {
@@ -58,5 +61,13 @@ void communicate() {
   } else {
     state = 0;
   }
-  BluetoothSerial.println(String(running)+";"+String(distance)+";"+String(distanceDepart)+";"+String(distanceGauche)+";"+String(distanceDroite)+";"+String(distanceAvant)+";"+String(detect)+";"+String(commandReply));
+  BluetoothSerial.println(String(running)+";"+String(distance)+";"+String(distanceGauche)+";"+String(distanceAvant)+";"+String(distanceDroite)+";"+String(detect)+";"+String(commandReply));
 }
+
+void generateRandomValues() {
+  distance = random(100);
+  distanceGauche = random(50);
+  distanceAvant = random(30);
+  distanceDroite = random(50);
+}
+

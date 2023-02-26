@@ -19,8 +19,8 @@ class DataManager:
         try:
             if (data != ''):
                 array: list[str] = data.split(";")
-                if (len(array) == 8):
-                    data = f'"time":"{datetime.datetime.now()}","running":{str(array[0])},"distance":{str(array[1])},"front":{str(array[2])},"left":{str(array[3])},"right":{str(array[4])},"lineDetection":{str(array[5])},"commandResponse":{str(array[6])}'
+                if (len(array) == 7):
+                    data = f'"time":"{datetime.datetime.now()}","running":{str(array[0])},"distance":{str(array[1])},"left":{str(array[2])},"front":{str(array[3])},"right":{str(array[4])},"lineDetection":{str(array[5])},"commandResponse":{str(array[6])}'
                 else:
                     data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetection":-1,"commandResponse":-1'
                 return json.loads("{"+data+"}")
