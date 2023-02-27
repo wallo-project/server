@@ -1,3 +1,4 @@
+# TODO: CREATE BRIDGE FOR COMMAND RESPONSE
 class BridgeManager:
     def __init__(self) -> None:
         self.__command_bridge: str = ""

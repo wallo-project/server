@@ -4,7 +4,7 @@ import os
 
 from manager.bridge_manager import BridgeManager
 from manager.data_manager import DataManager
-
+import logging
 
 class SerialManager:
     def __init__(self, bridge_manager: BridgeManager, data_manager: DataManager, port: str | None = None) -> None:
@@ -22,6 +22,11 @@ class SerialManager:
     
     def is_ready(self) -> bool:
         return self.__s != None
+    
+    def __reset(self) -> None:
+        self.__ports = []
+        self.__port = None
+        self.__s = None
 
     def __load_ports(self) -> None:
         
@@ -53,6 +58,7 @@ class SerialManager:
             for port in self.__ports:
                 # for each port, try to open the serial communication
                 try:
+                    logging.info(f"Attempting connection on port {port}")
                     self.__s = serial.Serial(port=port, timeout=3, write_timeout=3)
                     # send a test message
                     self.__send('3')
@@ -65,6 +71,7 @@ class SerialManager:
                         self.__bridge.set_connected(True)
                         # set the port
                         self.__port = port
+                        logging.info(f"Connected on port {port}")
                         # return true, the connection is initiated
                         return True
                 
@@ -87,7 +94,8 @@ class SerialManager:
         return self.__s.read_until().decode()[:-1]
 
     def run(self) -> None:
-        if (not self.is_ready()):
+        while (not self.is_ready()):
+            self.__reset()
             self.init_connection()
         
         while (True):

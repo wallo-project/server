@@ -23,9 +23,12 @@ class DataManager:
                     data = f'"time":"{datetime.datetime.now()}","running":{str(array[0])},"distance":{str(array[1])},"left":{str(array[2])},"front":{str(array[3])},"right":{str(array[4])},"lineDetection":{str(array[5])},"commandResponse":{str(array[6])}'
                 else:
                     data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetection":-1,"commandResponse":-1'
-                return json.loads("{"+data+"}")
+            else:
+                data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetection":-1,"commandResponse":-1'
         except:
-            return {}
+            data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetection":-1,"commandResponse":-1'
+        
+        return json.loads("{"+data+"}")
         
     def store_data(self, data: dict[str, str]) -> None:
         with open(self.__path, 'a') as f:
