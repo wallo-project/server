@@ -1,3 +1,13 @@
+"""! File containing the data managing system, its goal is to convert and format data.
+This manager is called in the serial server.
+
+@author WALL-O Team
+@version 0.9.0
+@since 15 January 2023
+
+TODO add documentation
+"""
+
 import datetime
 import json
 

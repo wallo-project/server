@@ -20,9 +20,6 @@ class SerialManager:
     def get_port(self) -> str | None:
         return self.__port
     
-    def is_ready(self) -> bool:
-        return self.__s != None
-    
     def __reset(self) -> None:
         self.__ports = []
         self.__port = None
@@ -88,15 +85,23 @@ class SerialManager:
         return False
     
     def __send(self, data: str) -> None:
-        self.__s.write(data.encode())
+        try:
+            self.__s.write(data.encode())
+        except:
+            logging.error("Could not send data to Arduino")
 
     def __read(self) -> str | None:
-        return self.__s.read_until().decode()[:-1]
+        try:
+            return self.__s.read_until().decode()[:-1]
+        except:
+            logging.error("Could not read data from Arduino")
+            return None
 
     def run(self) -> None:
-        while (not self.is_ready()):
+        connected: bool = False
+        while (not connected):
             self.__reset()
-            self.init_connection()
+            connected = self.init_connection()
         
         while (True):
             
