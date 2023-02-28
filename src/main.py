@@ -16,7 +16,7 @@ def main() -> None:
     # setup the serial communication with the Arduino
     serial_manager: SerialManager = SerialManager(bridge_manager, data_manager)
     # setup the main Server
-    api_manager: ApiManager = ApiManager(bridge_manager)
+    api_manager: ApiManager = ApiManager(bridge_manager, data_manager.get_filename())
 
     serial_thread = threading.Thread(target=serial_manager.run)
 

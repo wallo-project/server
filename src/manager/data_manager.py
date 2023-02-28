@@ -12,16 +12,22 @@ import datetime
 import json
 
 class DataManager:
-    def __init__(self, path: str | None = None) -> None:
-        
-        self.__path: str = path
+    def __init__(self) -> None:
 
-        if (path is None):
-            dt: datetime.datetime = datetime.datetime.now()
-            self.__path: str = f"./reports/report{dt.year}-{dt.month}-{dt.day}-{dt.hour}-{dt.minute}-{dt.second}.csv"
+        dt: datetime.datetime = datetime.datetime.now()
+        
+        self.__filename: str = f"report{dt.year}-{dt.month}-{dt.day}-{dt.hour}-{dt.minute}-{dt.second}.csv"
+        self.__path: str = f"./reports/{self.__filename}"
     
+    def get_filename(self) -> str:
+        """! Method to get the name of the latest file.
+        The name of the file does not contain the path.
+        
+        @return a string containing the file name.
+        """
+        return self.__filename
     
-    def init_file(self):
+    def init_file(self) -> None:
         with open(self.__path, 'w') as f:
             f.write("TIME;RUNNING;DISTANCE;FRONT_DISTANCE;LEFT_DISTANCE;RIGHT_DISTANCE;LINE_DETECTION;COMMAND_RESPONSE\n")
 

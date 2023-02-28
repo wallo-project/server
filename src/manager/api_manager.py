@@ -2,13 +2,15 @@
 All the informations are coming from the @see BridgeManager class.
 
 @author WALL-O Team
-@version 0.9.0
+@version 1.0.0
 @since 02 January 2023
 """
 
 # importing elements from modules
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 # importing modules
 import uvicorn
 # importing config
@@ -21,17 +23,16 @@ class ApiManager(FastAPI):
     It inherits from FastAPI class.
     
     @author WALL-O Team
-    @version 0.9.0
+    @version 1.0.0
     @since 02 January 2023
-
-    TODO Add reports serving
     """
     
-    def __init__(self, bridge_manager: BridgeManager, host: str | None = None, port: int = 8080, allow_origins: list[str] | str = '*', allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
+    def __init__(self, bridge_manager: BridgeManager, filename: str, host: str | None = None, port: int = 8080, allow_origins: list[str] | str = '*', allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
         """! Constructor of the class.
         This class contains the API to run.
 
         @param bridge_manager the manager of services to communicate with Arduino.
+        @param filename the file to serve for report.
         @param host the host IP address of the API (optional).
         @param port the port of the API (optional).
         @param allow_origins the allowed origins of the incoming requests. Default: all (optional).
@@ -55,6 +56,8 @@ class ApiManager(FastAPI):
         self.__host: str | None = host
         self.__port: int = port
 
+        self.__filename: str = filename
+
         self.__bridge_manager: BridgeManager = bridge_manager
 
         # setting routes related to the API status
@@ -68,6 +71,9 @@ class ApiManager(FastAPI):
         self.add_api_route("/command/stop", self.__post_stop, methods=["POST", "GET"])
         # get data from the Arduino
         self.add_api_route('/latest-data', self.__latest_data, methods=["GET"])
+        # serv reports
+        self.mount("/reports", StaticFiles(directory="reports"), name="static")
+        self.add_api_route("/report", self.__get_report, methods=["GET"])
 
     async def __get_welcome(self) -> str:
         """! Method that return a welcome message.
@@ -95,6 +101,14 @@ class ApiManager(FastAPI):
             "wallo_connection": self.__bridge_manager.is_connected(),
             "services": "SUCCESSFULLY_LOADED"
         }
+    
+    async def __get_report(self) -> RedirectResponse:
+        """! Method that redirect to the file to download.
+        This method use the filename passed at the creation of the object.
+        
+        @return a RedirectResponse object.
+        """
+        return RedirectResponse(url=f"/reports/{self.__filename}")
     
     async def __latest_data(self) -> dict:
         """! Method get latest data from the Arduino.
