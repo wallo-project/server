@@ -48,6 +48,8 @@ class SerialManager:
 
         @return a boolean that indicate if the connection is successfully initiated or not.
         """
+        # set the connection status
+        self.__bridge.set_connected(False)
         # checking if the serial port is already defined or not
         if (self.__port is None):
             # in case the port is not loaded, fetch all port likely to be opened
@@ -98,17 +100,36 @@ class SerialManager:
             return None
 
     def run(self) -> None:
+        """! Method to run to start the serial server."""
+
+        # set default status of connection
         connected: bool = False
+        
+        # while not connected try to connect
         while (not connected):
+            # set default data for the API
+            data: dict = self.__data_manager.convert_data(None)
+            self.__bridge.set_data(data)
+            # reset the elements of the connection
             self.__reset()
+            # init the connection
             connected = self.init_connection()
         
-        while (True):
-            
+        while (connected):
+            # while connected if a command is waiting, send it to the Arduino
             if (self.__bridge.has_command()):
                 self.__send(self.__bridge.get_command())
+                # then reset the command
                 self.__bridge.reset_command()
 
-            data: dict = self.__data_manager.convert_data(self.__read())
-            self.__bridge.set_data(data)
-            self.__data_manager.store_data(data)
+            # read data from the Arduino
+            retrieved_data: str = self.__read()
+            # if the data is none, then try to connect again
+            if (retrieved_data is None) or (retrieved_data == ''):
+                connected = False
+                self.run()
+            else:
+                # else convert and store data 
+                data: dict = self.__data_manager.convert_data(retrieved_data)
+                self.__bridge.set_data(data)
+                self.__data_manager.store_data(data)
