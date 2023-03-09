@@ -1,3 +1,12 @@
+"""! File containing the class that manage all the communications with the robot through a serial communication.
+The communication is made over Bluetooth port.
+    
+@author WALL-O Team
+@version 1.0.0
+@since 15 January 2023
+"""
+
+# importing libraries
 import serial
 import serial.tools.list_ports
 import os
@@ -7,7 +16,19 @@ from manager.data_manager import DataManager
 import logging
 
 class SerialManager:
+    """! Class that manage all the communications with the robot through a serial communication.
+    The communication is made over Bluetooth port.
+    
+    @author WALL-O Team
+    @version 1.0.0
+    @since 15 January 2023
+    """
     def __init__(self, bridge_manager: BridgeManager, data_manager: DataManager, port: str | None = None) -> None:
+        """! Constructor of the serial manager class.
+        This method is called when creating a serial manager object.
+        
+        @param bridge_manager
+        """
         self.__s: serial.Serial = None
         self.__port: str = port
         self.__bridge: BridgeManager = bridge_manager
@@ -73,17 +94,20 @@ class SerialManager:
                         logging.info(f"Connected on port {port}")
                         # return true, the connection is initiated
                         return True
-                
+            
                 except:
-                    pass
+                    # except there is an exception in the creation of the serial
+                    logging.error(f"Error creating a serial communication on port {port}")
         else:
-
+            # else there is a port set for the connection
             try:
+                # try to connect
                 self.__s = serial.Serial(port=self.__port, timeout=5, write_timeout=10)
                 return True
             except:
+                logging.error(f"Error creating a serial communication on port {self.__port}")
                 return False
-        
+        # return by default false, no connection have been established
         return False
     
     def __send(self, data: str) -> None:
