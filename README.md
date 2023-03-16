@@ -16,7 +16,7 @@ This application require a Windows system and some several librairies listed bel
 
 The setup of the server can be done in several ways. and depends on the OS you are running on.
 
-> **The server is currently only working on Windows machines.**
+> **The server is only working on Windows system.**
 
 ### Automatic setup
 
@@ -32,7 +32,6 @@ To setup manually the server follow the instructions below:
 - Activate the python environment using the command `[path of the project]/.venv/Scripts/Activate.ps1/.bat` (Select .ps1 if you are using Windows Powershell, .bat otherwise)
 - Install the libraries using `pip install -r requirements.txt`
 - Run the server using `python ./src/main.py`
-
 
 ## Documentation
 
