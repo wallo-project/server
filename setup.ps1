@@ -34,6 +34,14 @@ if (-not $run) {
 }
 
 if ($run) {
+    # Activate the virtual environment
+    Write-Output "Activating Python virtual environement..."
+    if (-not (Test-Path ".\.venv\Scripts\Activate.ps1")) {
+        Write-Error "Could not execute .venv\Scripts\Activate.ps1"
+        exit 1
+    }
+
+    . ".\.venv\Scripts\Activate.ps1"
     if (-not (Invoke-Expression "python src/main.py")) {
         Write-Error "Failed to run main.py"
         exit 1

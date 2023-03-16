@@ -29,6 +29,7 @@ class SerialManager:
         
         @param bridge_manager
         """
+        # setup attributes
         self.__s: serial.Serial = None
         self.__port: str = port
         self.__bridge: BridgeManager = bridge_manager
@@ -36,27 +37,47 @@ class SerialManager:
         self.__ports: list[str] = []
 
     def set_port(self, port: str) -> None:
+        """! Method that set the port to use.
+        If this method is not used, the port is automatically defined.
+
+        @param port the port to use.        
+        """
         self.__port = port
 
     def get_port(self) -> str | None:
+        """! Method to get the current serial port set to communicate.
+        The port allow to establish a serial communication with the Arduino.
+
+        @return the serial port.
+        """
         return self.__port
     
     def __reset(self) -> None:
+        """! Private method that reset the connection information.
+        This include the candidate ports to open a connection.
+        """
         self.__ports = []
         self.__port = None
         self.__s = None
 
     def __load_ports(self) -> None:
-        
+        """! Private method to load ports that may connect to the Arduino via a serial
+        communication using Bluetooth.
+        """
+
+        # get the ports
         ports: list = list(serial.tools.list_ports.comports())
 
+        # depending on the OS, check the ports to connect on
         match os.name:
             case "nt":
+                # check for windows
                 for port in ports:
                     if 'COM' in port.description:
                         self.__ports.append(port.name)
 
             case "posix":
+                # check for linux
                 for port in ports:
                     if 'COM' in port.description:
                         self.__ports.append(port.name)
@@ -111,15 +132,28 @@ class SerialManager:
         return False
     
     def __send(self, data: str) -> None:
+        """! Private method to send data to the Arduino through a serial connection.
+        This data is encoded in bits to be sent.
+        
+        @param data a string of data.
+        """
         try:
+            # try to write data after encoding it
             self.__s.write(data.encode())
         except:
             logging.error("Could not send data to Arduino")
 
     def __read(self) -> str | None:
+        """! Private method to read data from the Arduino through a serial connection.
+        This data is decoded. If no value is read when the timeout is read, the method returns None.
+        
+        @return a string of data or None if no value has been read.
+        """
         try:
+            # try to return a read and decoded value
             return self.__s.read_until().decode()[:-1]
         except:
+            # in case of no value read, return None
             logging.error("Could not read data from Arduino")
             return None
 
