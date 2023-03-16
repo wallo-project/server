@@ -9,7 +9,6 @@ The communication is made over Bluetooth port.
 # importing libraries
 import serial
 import serial.tools.list_ports
-import os
 
 from manager.bridge_manager import BridgeManager
 from manager.data_manager import DataManager
@@ -67,20 +66,10 @@ class SerialManager:
 
         # get the ports
         ports: list = list(serial.tools.list_ports.comports())
-
-        # depending on the OS, check the ports to connect on
-        match os.name:
-            case "nt":
-                # check for windows
-                for port in ports:
-                    if 'COM' in port.description:
-                        self.__ports.append(port.name)
-
-            case "posix":
-                # check for linux
-                for port in ports:
-                    if 'COM' in port.description:
-                        self.__ports.append(port.name)
+        # check for windows
+        for port in ports:
+            if 'COM' in port.description:
+                self.__ports.append(port.name)
 
     def init_connection(self) -> bool:
         """! Method that init the connection with the Bluetooth module.
