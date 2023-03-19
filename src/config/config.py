@@ -2,7 +2,7 @@
 This file contains the logging system data, API constants.
 
 @author WALL-O Team
-@version 1.0.0
+@version 1.1.0
 @since 10/01/2023
 """
 
@@ -10,8 +10,11 @@ import logging
 
 # API part
 API_NAME: str = "WALL-O API"
-API_VERSION: str = "1.0.0"
-API_DEFAULT_PORT: int = 8080
+API_VERSION: str = "1.1.0"
+# using 8081 instead of 8080 to avoid any conflict with any already running web servers
+API_DEFAULT_PORT: int = 8081
+
+DASHBOARD_URL: str = "https://wall-o.benjaminpmd.fr/dashboard"
 
 # logging
 # logging configuration

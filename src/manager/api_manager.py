@@ -2,7 +2,7 @@
 All the informations are coming from the @see BridgeManager class.
 
 @author WALL-O Team
-@version 1.0.0
+@version 1.1.0
 @since 02 January 2023
 """
 
@@ -23,11 +23,11 @@ class ApiManager(FastAPI):
     It inherits from FastAPI class.
     
     @author WALL-O Team
-    @version 1.0.0
+    @version 1.1.0
     @since 02 January 2023
     """
     
-    def __init__(self, bridge_manager: BridgeManager, filename: str, host: str | None = "0.0.0.0", port: int = 8080, allow_origins: list[str] | str = '*', allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
+    def __init__(self, bridge_manager: BridgeManager, filename: str, host: str | None = None, port: int = config.API_DEFAULT_PORT, allow_origins: list[str] | str = '*', allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
         """! Constructor of the class.
         This class contains the API to run.
 

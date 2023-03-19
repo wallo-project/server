@@ -2,12 +2,15 @@
 This function creates and start the server.
 
 @author WALL-O Team
-@version 1.0.0
+@version 1.1.0
 @since 15 January 2023
 """
 
 # import libs
 import threading
+import webbrowser
+
+from config import config
 from manager.api_manager import ApiManager
 from manager.serial_manager import SerialManager
 from manager.bridge_manager import BridgeManager
@@ -28,8 +31,13 @@ def main() -> None:
 
     serial_thread = threading.Thread(target=serial_manager.run)
 
+    # run the serial manager
     serial_thread.start()
+    
+    # open the dashboard
+    webbrowser.open(config.DASHBOARD_URL)
 
+    # run the API
     api_manager.run()
     
 if __name__ == '__main__':
