@@ -6,7 +6,7 @@ set "activate=%venv%\Scripts\activate.bat"
 set "requirements=requirements.txt"
 set "main=src\main.py"
 
-if "%1" neq "run" (
+if "%1" neq "-run" (
     rem Check if Python is installed
     %python% --version >nul 2>&1 || (
         echo Python is required to run this script
@@ -43,7 +43,7 @@ if "%1" neq "run" (
     )
 )
 rem Run main.py if requested
-if "%1"=="run" (
+if "%1"=="-run" (
     rem Activate virtual environment
     echo Activating Python virtual environement...
     call %activate% || (
