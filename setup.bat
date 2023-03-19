@@ -44,15 +44,17 @@ if "%1" neq "run" (
 )
 rem Run main.py if requested
 if "%1"=="run" (
+    rem Activate virtual environment
+    echo Activating Python virtual environement...
     call %activate% || (
         echo Failed to activate virtual environment
         exit /b 1
     )
-
+    
     %python% %main% || (
         echo Failed to run main.py
         exit /b 1
     )
 )
 
-echo Server is set up. You can run it using setup.bat run
+echo Server is set up. You can run it using setup.ps1 -run

@@ -27,7 +27,7 @@ class ApiManager(FastAPI):
     @since 02 January 2023
     """
     
-    def __init__(self, bridge_manager: BridgeManager, filename: str, host: str | None = None, port: int = 8080, allow_origins: list[str] | str = '*', allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
+    def __init__(self, bridge_manager: BridgeManager, filename: str, host: str | None = "0.0.0.0", port: int = 8080, allow_origins: list[str] | str = '*', allow_credentials: bool = True, allow_methods: list[str] = ["*"], allow_headers: list[str] = ["*"]) -> None:
         """! Constructor of the class.
         This class contains the API to run.
 

@@ -47,7 +47,7 @@ class DataManager:
         
         with open(self.__path, 'w') as f:
             # open the file and add the corresponding titles
-            f.write("TIME;RUNNING;DISTANCE;FRONT_DISTANCE;LEFT_DISTANCE;RIGHT_DISTANCE;LE_DETECTION_ACTIVATION;LINE_DETECTED;COMMAND_RESPONSE\n")
+            f.write("TIME;RUNNING;DISTANCE;FRONT_DISTANCE;LEFT_DISTANCE;RIGHT_DISTANCE;LINE_DETECTION_ACTIVATION;LINE_DETECTED;COMMAND_RESPONSE\n")
 
     def convert_data(self, data: str) -> dict[str]:
         """! Method that convert data from a string to a dictionary.
