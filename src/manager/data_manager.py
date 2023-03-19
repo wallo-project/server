@@ -47,7 +47,7 @@ class DataManager:
         
         with open(self.__path, 'w') as f:
             # open the file and add the corresponding titles
-            f.write("TIME;RUNNING;DISTANCE;FRONT_DISTANCE;LEFT_DISTANCE;RIGHT_DISTANCE;LINE_DETECTION;COMMAND_RESPONSE\n")
+            f.write("TIME;RUNNING;DISTANCE;FRONT_DISTANCE;LEFT_DISTANCE;RIGHT_DISTANCE;LE_DETECTION_ACTIVATION;LINE_DETECTED;COMMAND_RESPONSE\n")
 
     def convert_data(self, data: str) -> dict[str]:
         """! Method that convert data from a string to a dictionary.
@@ -63,20 +63,20 @@ class DataManager:
                 # if the data is not empty, split it
                 array: list[str] = data.split(";")
 
-                if (len(array) == 7):
+                if (len(array) == 8):
                     # check if the length of the array is correct
-                    data = f'"time":"{datetime.datetime.now()}","running":{str(array[0])},"distance":{str(array[1])},"left":{str(array[2])},"front":{str(array[3])},"right":{str(array[4])},"lineDetection":{str(array[5])},"commandResponse":{str(array[6])}'
+                    data = f'"time":"{datetime.datetime.now()}","running":{str(array[0])},"distance":{str(array[1])},"left":{str(array[2])},"front":{str(array[3])},"right":{str(array[4])},"lineDetectionSensors":{str(array[5])},"lineDetection":{str(array[6])},"commandResponse":{str(array[7])}'
                 
                 else:
                     # else use default data
-                    data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetection":-1,"commandResponse":-1'
+                    data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetectionSensors":-1,"lineDetection":-1,"commandResponse":-1'
            
             else:
                 # if data is empty use default data
-                data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetection":-1,"commandResponse":-1'
+                data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetectionSensors":-1,"lineDetection":-1,"commandResponse":-1'
         except:
             # in case of error, use default data
-            data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetection":-1,"commandResponse":-1'
+            data = f'"time":"{datetime.datetime.now()}","running":-1,"distance":-1,"front":-1,"left":-1,"right":-1,"lineDetectionSensors":-1,"lineDetection":-1,"commandResponse":-1'
         
         # return a dict
         return json.loads("{"+data+"}")
@@ -88,4 +88,4 @@ class DataManager:
         @param data the dictionary extracted from the string from the Arduino.
         """
         with open(self.__path, 'a') as f:
-            f.write(str(data['time'])+';'+str(data["running"])+';'+str(data['distance'])+';'+str(data['front'])+';'+str(data['left'])+';'+str(data['right'])+';'+str(data['lineDetection'])+';'+str(data['commandResponse'])+'\n')
+            f.write(str(data['time'])+';'+str(data["running"])+';'+str(data['distance'])+';'+str(data['front'])+';'+str(data['left'])+';'+str(data['right'])+';'+str(data['lineDetectionSensors'])+';'+str(data['lineDetection'])+';'+str(data['commandResponse'])+'\n')

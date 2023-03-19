@@ -14,7 +14,11 @@
 
 bool running = false;
 
-bool detect = true;
+// if the robot should follow a line
+bool lineTrackingActivation = true;
+
+// if the robot is detecting a line
+bool detect = false;
 
 long duration, distance, distanceDepart, distanceGauche, distanceDroite, distanceAvant;
 
@@ -50,18 +54,30 @@ void communicate() {
     running = true;
     commandReply = true;
     state = 0;
-
-  } else if (state == '2') {
+  } 
+  else if (state == '2') {
     running = false;
     commandReply = true;
     state = 0;
-  } else if (state == '3') {
+  } 
+  else if (state == '3') {
     commandReply = true;
     state = 0;
-  } else {
+  } 
+  else if (state == '4') {
+    lineTrackingActivation = true;
+    commandReply = true;
     state = 0;
   }
-  BluetoothSerial.println(String(running)+";"+String(distance)+";"+String(distanceGauche)+";"+String(distanceAvant)+";"+String(distanceDroite)+";"+String(detect)+";"+String(commandReply));
+  else if (state == '5') {
+    lineTrackingActivation = false;
+    commandReply = true;
+    state = 0;
+  }
+  else {
+    state = 0;
+  }
+  BluetoothSerial.println(String(running)+";"+String(distance)+";"+String(distanceGauche)+";"+String(distanceAvant)+";"+String(distanceDroite)+";"+String(lineTrackingActivation)+";"+String(detect)+";"+String(commandReply));
 }
 
 void generateRandomValues() {

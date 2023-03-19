@@ -69,6 +69,8 @@ class ApiManager(FastAPI):
         # setting routes to send data to the Arduino
         self.add_api_route('/command/start', self.__post_start, methods=["POST", "GET"])
         self.add_api_route("/command/stop", self.__post_stop, methods=["POST", "GET"])
+        self.add_api_route('/command/enable-line-track', self.__post_line_track_enable, methods=["POST", "GET"])
+        self.add_api_route('/command/disable-line-track', self.__post_line_track_disable, methods=["POST", "GET"])
         # get data from the Arduino
         self.add_api_route('/latest-data', self.__latest_data, methods=["GET"])
         # serv reports
@@ -129,6 +131,7 @@ class ApiManager(FastAPI):
         self.__bridge_manager.set_command("1")
         return {"response": "OK"}
 
+
     async def __post_stop(self) -> dict:
         """! Method to store a stop command to pass to the Arduino.
         This call the bridge to store the command to send.
@@ -136,6 +139,24 @@ class ApiManager(FastAPI):
         @return a dict to confirm the storage of the command.
         """
         self.__bridge_manager.set_command("2")
+        return {"response": "OK"}
+    
+    async def __post_line_track_enable(self) -> dict:
+        """! Method to store a line track enabled command to pass to the Arduino.
+        This call the bridge to store the command to send.
+
+        @return a dict to confirm the storage of the command.
+        """
+        self.__bridge_manager.set_command("4")
+        return {"response": "OK"}
+    
+    async def __post_line_track_disable(self) -> dict:
+        """! Method to store a line track disable command to pass to the Arduino.
+        This call the bridge to store the command to send.
+
+        @return a dict to confirm the storage of the command.
+        """
+        self.__bridge_manager.set_command("5")
         return {"response": "OK"}
     
 
