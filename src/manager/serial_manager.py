@@ -90,8 +90,7 @@ class SerialManager:
                 try:
                     logging.info(f"Attempting connection on port {port}")
                     self.__s = serial.Serial(port=port, timeout=3, write_timeout=3)
-                    # send a test message
-                    self.__send('3')
+                    
                     # result of the read
                     res = self.__read()
                     
