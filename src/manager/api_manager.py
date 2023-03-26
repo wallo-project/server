@@ -67,15 +67,15 @@ class ApiManager(FastAPI):
         self.add_api_route('/healthcheck', self.__get_healthcheck)
         self.add_api_route('/status', self.__get_status)
         # setting routes to send data to the Arduino
-        self.add_api_route('/command/start', self.__post_start, methods=["POST", "GET"])
-        self.add_api_route("/command/stop", self.__post_stop, methods=["POST", "GET"])
-        self.add_api_route('/command/enable-line-track', self.__post_line_track_enable, methods=["POST", "GET"])
-        self.add_api_route('/command/disable-line-track', self.__post_line_track_disable, methods=["POST", "GET"])
+        self.add_api_route('/command/start', self.__post_start)
+        self.add_api_route("/command/stop", self.__post_stop)
+        self.add_api_route('/command/enable-line-track', self.__post_line_track_enable)
+        self.add_api_route('/command/disable-line-track', self.__post_line_track_disable)
         # get data from the Arduino
-        self.add_api_route('/latest-data', self.__latest_data, methods=["GET"])
+        self.add_api_route('/latest-data', self.__latest_data)
         # serv reports
         self.mount("/reports", StaticFiles(directory="reports"), name="static")
-        self.add_api_route("/report", self.__get_report, methods=["GET"])
+        self.add_api_route("/report", self.__get_report)
 
     async def __get_welcome(self) -> str:
         """! Method that return a welcome message.
