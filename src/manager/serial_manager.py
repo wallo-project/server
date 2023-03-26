@@ -2,7 +2,7 @@
 The communication is made over Bluetooth port.
     
 @author WALL-O Team
-@version 1.0.0
+@version 1.1.0
 @since 15 January 2023
 """
 
@@ -19,7 +19,7 @@ class SerialManager:
     The communication is made over Bluetooth port.
     
     @author WALL-O Team
-    @version 1.0.0
+    @version 1.1.0
     @since 15 January 2023
     """
     def __init__(self, bridge_manager: BridgeManager, data_manager: DataManager, port: str | None = None) -> None:

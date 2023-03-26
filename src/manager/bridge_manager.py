@@ -2,7 +2,7 @@
 and vice-versa.
 
 @author WALL-O Team
-@version 1.0.0
+@version 1.1.0
 @since 10/01/2023
 """
 
@@ -11,7 +11,7 @@ class BridgeManager:
     and vice-versa.
 
     @author WALL-O Team
-    @version 1.0.0
+    @version 1.1.0
     @since 10/01/2023
     """
     def __init__(self) -> None:

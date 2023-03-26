@@ -2,7 +2,7 @@
 This manager is called in the serial server.
 
 @author WALL-O Team
-@version 1.0.0
+@version 1.1.0
 @since 15 January 2023
 """
 # import libs
@@ -15,7 +15,7 @@ class DataManager:
     It also save the data in a report file.
     
     @author WALL-O Team
-    @version 1.0.0
+    @version 1.1.0
     @since 15 January 2023
     """
     def __init__(self) -> None:
