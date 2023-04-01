@@ -1,22 +1,22 @@
 # WALL-O Server
 
-This server is a bridge between the Arduino and web application, on one hand, it handle communication over Bluetooth using serial ports, and on the other, it uses a REST API to serve data for the web application. This server also store all the data in CSV files each time a run is in progress.
+This server is a bridge between the Arduino and web application, on one hand, it handle communication over Bluetooth using serial ports, and on the other, it uses a REST API to serve data to the web application. This server also store all the data in CSV files each time a run is in progress.
 
 ## Requirements
 
-This application require a Windows system and some several librairies listed below:
+> The server is only working on Windows system and require Python 3.10 or greater.
+
+This application also require several librairies listed below:
 
 - [FastAPI](https://pypi.org/project/fastapi/)
 - [Uvicorn](https://pypi.org/project/uvicorn/)
 - [PySerial](https://pypi.org/project/pyserial/)
 
-> In order to run the code, Python 3.10 or greater is also required
-
 ## Setup
 
-The setup of the server can be done in several ways. and depends on the OS you are running on.
+The setup of the server can be done with two different methods. The first one use a script to setup automatically the server and the second one require to use commands manually to setup the server.
 
-> **The server is only working on Windows system.**
+First, no matter the method you select, you need to pair the Bluetooth device of the robot. In order to do this, go in the Bluetooth setting, add a device, the Bluetooth module of the robot should appear as `HC-05`. Note that it may take up to one minute for the device to appear in the list.
 
 ### Automatic setup
 
